@@ -343,15 +343,18 @@ class IntrinsicsSymbolTable:
         """
         return IntrinsicsSymbolTable.REGIONS.get(region)
 
-    @staticmethod
-    def handle_pseudo_account_id():
+    def handle_pseudo_account_id(self):
         """
         This gets a default account id from SamBaseProvider.
         Return
         -------
-        A pseudo account id
+        An account id
         """
-        return IntrinsicsSymbolTable.DEFAULT_PSEUDO_PARAM_VALUES.get(IntrinsicsSymbolTable.AWS_ACCOUNT_ID)
+        return (
+                self.logical_id_translator.get(IntrinsicsSymbolTable.AWS_REGION)
+                or os.getenv("AWS_ACCOUNT_ID")
+                or IntrinsicsSymbolTable.DEFAULT_PSEUDO_PARAM_VALUES.get(IntrinsicsSymbolTable.AWS_ACCOUNT_ID)
+        )
 
     def handle_pseudo_region(self):
         """

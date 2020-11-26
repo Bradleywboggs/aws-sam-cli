@@ -53,6 +53,7 @@ class InvokeContext:
         force_image_build=None,
         aws_region=None,
         aws_profile=None,
+        aws_account_id=None,
     ):
         """
         Initialize the context
@@ -106,7 +107,7 @@ class InvokeContext:
         self._force_image_build = force_image_build
         self._aws_region = aws_region
         self._aws_profile = aws_profile
-
+        self._aws_account_id = aws_account_id
         self._template_dict = None
         self._function_provider = None
         self._env_vars_value = None
@@ -121,7 +122,6 @@ class InvokeContext:
 
         :returns InvokeContext: Returns this object
         """
-
         # Grab template from file and create a provider
         self._template_dict = self._get_template_data(self._template_file)
         self._function_provider = SamFunctionProvider(self._template_dict, self.parameter_overrides)
@@ -168,7 +168,7 @@ class InvokeContext:
         if len(all_functions) == 1:
             return all_functions[0].functionname
 
-        # Get all the available function names to print helpful exception message
+
         all_function_names = [f.functionname for f in all_functions]
 
         # There are more functions in the template, and function identifier is not provided, hence raise.
@@ -256,6 +256,8 @@ class InvokeContext:
         # Override certain CloudFormation pseudo-parameters based on values provided by customer
         if self._aws_region:
             self._parameter_overrides["AWS::Region"] = self._aws_region
+        if self._aws_account_id:
+            self._parameter_overrides["AWS::AccountId"] = self._aws_account_id
 
         return self._parameter_overrides
 

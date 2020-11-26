@@ -5,12 +5,14 @@ CLI command for "local invoke" command
 import logging
 import click
 
-from samcli.cli.main import pass_context, common_options as cli_framework_options, aws_creds_options
+from samcli.cli.main import aws_creds_options, common_options as cli_framework_options
+from samcli.cli.options import account_id_option
+from samcli.commands.local.lib.local_context import LocalContext
 from samcli.commands.local.cli_common.options import invoke_common_options
 from samcli.lib.telemetry.metrics import track_command
 from samcli.cli.cli_config_file import configuration_option, TomlProvider
 
-
+pass_context = click.make_pass_decorator(LocalContext)
 LOG = logging.getLogger(__name__)
 
 HELP_TEXT = """
@@ -42,6 +44,7 @@ STDIN_FILE_NAME = "-"
 @click.option("--no-event", is_flag=True, default=True, help="DEPRECATED: By default no event is assumed.", hidden=True)
 @invoke_common_options
 @cli_framework_options
+@account_id_option
 @aws_creds_options
 @click.argument("function_identifier", required=False)
 @pass_context
@@ -146,6 +149,7 @@ def do_cli(  # pylint: disable=R0914
             force_image_build=force_image_build,
             aws_region=ctx.region,
             aws_profile=ctx.profile,
+            aws_account_id=ctx.account_id
         ) as context:
 
             # Invoke the function
